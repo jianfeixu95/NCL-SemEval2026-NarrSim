@@ -18,7 +18,7 @@ export OMP_NUM_THREADS=8
 python -m torch.distributed.launch \
     --nproc_per_node $NUM_GPU \
     --master_port $PORT_ID "../simcse/train.py" \
-    --model_name_or_path "princeton-nlp/sup-simcse-roberta-large" \
+    --model_name_or_path "../sup-simcse-roberta-large" \
     --train_file "../data/train_track_a.csv" \
     --output_dir "../train/checkpoints/sup-simcse-roberta-large-v1" \
     --num_train_epochs 3 \

@@ -255,6 +255,10 @@ def main():
         # let's parse it to get our arguments.
         model_args, data_args, training_args = parser.parse_json_file(json_file=os.path.abspath(sys.argv[1]))
     else:
+        # import sys
+        # 兼容 torch.distributed.launch / torchrun 传入的 local_rank
+        sys.argv = [a for a in sys.argv if not a.startswith("--local_rank") and not a.startswith("--local-rank")]
+
         model_args, data_args, training_args = parser.parse_args_into_dataclasses()
 
     if (
