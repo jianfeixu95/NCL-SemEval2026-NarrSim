@@ -37,7 +37,7 @@ print(f"{'='*20} 开始批量执行匿名化预处理 {'='*20}\n")
 # 外层进度条：监控文件整体处理进度
 for filename in tqdm(files_to_process, desc="整体文件进度"):
     input_path = os.path.join(data_dir, filename)
-    output_path = os.path.join(data_dir, filename.replace('.xls', '_processed.xls'))
+    output_path = os.path.join(data_dir, filename.replace('.xls', '_processed.xlsx'))
 
     if not os.path.exists(input_path):
         tqdm.write(f"跳过文件（未找到）: {filename}")
@@ -55,12 +55,31 @@ for filename in tqdm(files_to_process, desc="整体文件进度"):
         if col not in df.columns:
             raise ValueError(f"缺少必要列: {col}。当前列为: {df.columns.tolist()}")
 
-    # 逐行处理，保持与原脚本相同“逐条匿名化 + 首行对比打印”的结构
-    sent0_anon_list = []
-    sent1_anon_list = []
-    hard_neg_anon_list = []
+    # ==========================
+    # 中间落盘/断点续跑逻辑（按你给的结构嵌入）
+    # ==========================
+    tmp_output_path = output_path.replace('.xlsx', '_tmp.pkl')  # 用pkl做中间缓存最稳（注意这里是 .xlsx）
+    save_every = 500
 
-    for i in tqdm(range(line_count), total=line_count, desc=f"处理 {filename}", leave=False):
+    # 如果之前跑崩过，尝试从缓存恢复
+    start_idx = 0
+    sent0_anon_list, sent1_anon_list, hard_neg_anon_list = [], [], []
+    if os.path.exists(tmp_output_path):
+        cache = pd.read_pickle(tmp_output_path)
+        start_idx = cache["done"]
+        sent0_anon_list = cache["sent0_anon"]
+        sent1_anon_list = cache["sent1_anon"]
+        hard_neg_anon_list = cache["hard_neg_anon"]
+        tqdm.write(f"检测到缓存，已恢复到第 {start_idx} 行继续跑。")
+
+    # 逐行处理，保持与原脚本相同“逐条匿名化 + 首行对比打印”的结构
+    for i in tqdm(
+        range(start_idx, line_count),
+        total=line_count,
+        initial=start_idx,
+        desc=f"处理 {filename}",
+        leave=False
+    ):
         row = df.iloc[i]
 
         # 兼容 Excel 里可能出现的 NaN
@@ -89,12 +108,26 @@ for filename in tqdm(files_to_process, desc="整体文件进度"):
             tqdm.write(f"【hard_neg - 匿名】:\n{hard_neg_anon}\n")
             tqdm.write(f"{'='*80}\n")
 
-    # 写回到同类型 .xls（新增 _anon 列）
+        # 定期落盘，避免白跑
+        if (i + 1) % save_every == 0:
+            pd.to_pickle(
+                {
+                    "done": i + 1,
+                    "sent0_anon": sent0_anon_list,
+                    "sent1_anon": sent1_anon_list,
+                    "hard_neg_anon": hard_neg_anon_list
+                },
+                tmp_output_path
+            )
+
+    # 循环结束后，写回 df 并导出 xlsx
     df['sent0_anon'] = sent0_anon_list
     df['sent1_anon'] = sent1_anon_list
     df['hard_neg_anon'] = hard_neg_anon_list
+    df.to_excel(output_path, index=False)  # 不写engine更稳
 
-    # 保存为 .xls（需要 xlwt 支持）
-    df.to_excel(output_path, index=False, engine='xlwt')
+    # 成功后删缓存
+    if os.path.exists(tmp_output_path):
+        os.remove(tmp_output_path)
 
 print(f"\n{'='*20} 所有数据集处理完成！ {'='*20}")
