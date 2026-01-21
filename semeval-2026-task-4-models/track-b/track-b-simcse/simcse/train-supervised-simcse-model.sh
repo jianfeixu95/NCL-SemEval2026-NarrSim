@@ -18,10 +18,10 @@ export OMP_NUM_THREADS=8
 python -m torch.distributed.launch \
     --nproc_per_node $NUM_GPU \
     --master_port $PORT_ID "./train.py" \
-    --model_name_or_path "../sup-simcse-roberta-large" \
+    --model_name_or_path "../checkpoints/princeton-nlp-sup-simcse-roberta-large" \
     --train_file "../data/train_track_a.csv" \
     --output_dir "../train/checkpoints/sup-simcse-roberta-large-v1" \
-    --num_train_epochs 5 \
+    --num_train_epochs 3 \
     --per_device_train_batch_size 32 \
     --learning_rate 1e-5 \
     --max_seq_length 32 \
@@ -32,12 +32,13 @@ python -m torch.distributed.launch \
     --save_steps 60 \
     --pooler_type cls \
     --overwrite_output_dir \
+    --do_mlm \
+    --mlm_weight 0.1 \
     --temp 0.05 \
     --do_train \
     --do_eval \
-    --hard_negative_weight 0.3 \
+    --hard_negative_weight 0.1 \
     --logging_steps 10 \
     --logging_dir "../train/checkpoints/sup-simcse-roberta-large-v1/runs" \
-    --mlp_only_train \
 #    --fp16 \
     "$@"

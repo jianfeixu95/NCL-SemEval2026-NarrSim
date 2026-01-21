@@ -11,6 +11,7 @@ import warnings
 from pathlib import Path
 import importlib.util
 from packaging import version
+import torch.nn.functional as F
 from transformers import Trainer
 from transformers.modeling_utils import PreTrainedModel
 from transformers.training_args import ParallelMode, TrainingArguments
@@ -90,6 +91,50 @@ logger = logging.get_logger(__name__)
 
 class CLTrainer(Trainer):
 
+    def _embed_texts(self, texts, batch_size=128):
+        embs = []
+        self.model.eval()
+        for i in range(0, len(texts), batch_size):
+            batch_texts = texts[i:i+batch_size]
+            batch = self.tokenizer(
+                batch_texts,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,          # 建议开启（否则可能超长）
+                max_length=self.args.max_seq_length if hasattr(self.args, "max_seq_length") else None,
+            )
+            batch = {k: v.to(self.args.device) for k, v in batch.items()}
+            with torch.no_grad():
+                outputs = self.model(**batch, return_dict=True, sent_emb=True)
+                emb = outputs.pooler_output
+                emb = F.normalize(emb, p=2, dim=-1)   # 关键：cosine 前先 normalize
+            embs.append(emb.cpu())
+        return torch.cat(embs, dim=0)
+
+    def _eval_triplet_metrics(self, eval_dataset, metric_key_prefix="eval"):
+        anchors = eval_dataset["sent0"]
+        pos = eval_dataset["sent1"]
+        neg = eval_dataset["hard_neg"]
+
+        a_emb = self._embed_texts(anchors)
+        p_emb = self._embed_texts(pos)
+        n_emb = self._embed_texts(neg)
+
+        # cosine = dot，因为已经 normalize
+        s_pos = (a_emb * p_emb).sum(dim=-1)
+        s_neg = (a_emb * n_emb).sum(dim=-1)
+
+        diff = s_pos - s_neg
+        pair_acc = (diff > 0).float().mean().item()
+
+        metrics = {
+            f"{metric_key_prefix}_pair_acc": pair_acc,
+            f"{metric_key_prefix}_margin_mean": diff.mean().item(),
+            f"{metric_key_prefix}_pos_sim_mean": s_pos.mean().item(),
+            f"{metric_key_prefix}_neg_sim_mean": s_neg.mean().item(),
+        }
+        return metrics
+
     def evaluate(
         self,
         eval_dataset: Optional[Dataset] = None,
@@ -100,6 +145,7 @@ class CLTrainer(Trainer):
 
         # SentEval prepare and batcher
         def prepare(params, samples):
+
             return
 
         def batcher(params, batch):
@@ -116,6 +162,15 @@ class CLTrainer(Trainer):
                 pooler_output = outputs.pooler_output
             return pooler_output.cpu()
 
+        metrics = {}
+        if eval_dataset is None:
+            eval_dataset = self.eval_dataset
+
+        if eval_dataset is not None:
+            first = eval_dataset.column_names
+            if isinstance(first, list) and "sent0" in first and "sent1" in first and "hard_neg" in first:
+                metrics.update(self._eval_triplet_metrics(eval_dataset, metric_key_prefix=metric_key_prefix))
+
         # Set params for SentEval (fastmode)
         params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 5}
         params['classifier'] = {'nhid': 0, 'optim': 'rmsprop', 'batch_size': 128,
@@ -131,7 +186,11 @@ class CLTrainer(Trainer):
         stsb_spearman = results['STSBenchmark']['dev']['spearman'][0]
         sickr_spearman = results['SICKRelatedness']['dev']['spearman'][0]
 
-        metrics = {"eval_stsb_spearman": stsb_spearman, "eval_sickr_spearman": sickr_spearman, "eval_avg_sts": (stsb_spearman + sickr_spearman) / 2} 
+        metrics.update({
+            "eval_stsb_spearman": stsb_spearman,
+            "eval_sickr_spearman": sickr_spearman,
+            "eval_avg_sts": (stsb_spearman + sickr_spearman) / 2}
+        )
         if eval_senteval_transfer or self.args.eval_transfer:
             avg_transfer = 0
             for task in ['MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']:

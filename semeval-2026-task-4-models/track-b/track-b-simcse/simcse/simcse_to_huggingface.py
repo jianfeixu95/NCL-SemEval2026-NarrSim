@@ -3,6 +3,8 @@ Convert SimCSE's checkpoints to Huggingface style.
 """
 
 import argparse
+import sys
+
 import torch
 import os
 import json
@@ -40,4 +42,7 @@ def main():
 
 
 if __name__ == "__main__":
+    # sys.argv = [
+    #     "--path", "../train/checkpoints/sup-simcse-roberta-large-v1"
+    # ]
     main()
