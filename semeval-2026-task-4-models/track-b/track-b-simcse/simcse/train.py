@@ -249,6 +249,7 @@ def main():
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
 
+
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, OurTrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
@@ -327,6 +328,7 @@ def main():
         "revision": model_args.model_revision,
         "use_auth_token": True if model_args.use_auth_token else None,
     }
+
     if model_args.config_name:
         config = AutoConfig.from_pretrained(model_args.config_name, **config_kwargs)
     elif model_args.model_name_or_path:
@@ -446,14 +448,17 @@ def main():
             
         return features
 
+    dataset = datasets["train"].train_test_split(test_size=0.2, seed=42)
     if training_args.do_train:
-        train_dataset = datasets["train"].map(
+        train_dataset = dataset["train"].map(
             prepare_features,
             batched=True,
             num_proc=data_args.preprocessing_num_workers,
             remove_columns=column_names,
             load_from_cache_file=not data_args.overwrite_cache,
         )
+    if training_args.do_eval:
+        eval_dataset = dataset["test"]
 
     # Data collator
     @dataclass
@@ -539,6 +544,7 @@ def main():
         model=model,
         args=training_args,
         train_dataset=train_dataset if training_args.do_train else None,
+        eval_dataset=eval_dataset if training_args.do_eval else None,
         tokenizer=tokenizer,
         data_collator=data_collator,
     )
@@ -587,4 +593,56 @@ def _mp_fn(index):
 
 
 if __name__ == "__main__":
+    sys.argv = [
+        "train.py",
+        "--model_name_or_path", "../checkpoints/facebookai-roberta-large",
+        "--train_file", "../data/nli_for_simcse_train.csv",
+        "--output_dir", "../train/checkpoints/self-simcse-roberta-large",
+        "--num_train_epochs", "1",
+        "--per_device_train_batch_size", "32",
+        "--learning_rate", "5e-5",
+        "--max_seq_length", "32",
+        "--evaluation_strategy", "steps",
+        "--metric_for_best_model", "stsb_spearman",
+        "--load_best_model_at_end",
+        "--eval_steps", "125",
+        "--save_steps", "125",
+        "--pooler_type", "cls",
+        "--temp", "0.05",
+        "--do_mlm",
+        "--mlm_weight", "0.1",
+        "--logging_steps", "10",
+        "--logging_dir", "../train/checkpoints/self-simcse-roberta-large/runs",
+        "--hard_negative_weight", "0.1",
+        "--do_train",
+        "--do_eval",
+        "--overwrite_output_dir",
+        "--fp16"
+        ]
+    # sys.argv = [
+    #     "train.py",
+    #
+    #     "--model_name_or_path", "../checkpoints/princeton-nlp-sup-simcse-roberta-large",
+    #     "--train_file", "../data/nli_for_simcse_train.csv",
+    #     "--output_dir", "../train/checkpoints/sup-simcse-roberta-large-v1",
+    #     "--num_train_epochs", "5",
+    #     "--per_device_train_batch_size", "16",
+    #     "--learning_rate", "5e-5",
+    #     "--max_seq_length", "32",
+    #     "--evaluation_strategy", "steps",
+    #     "--metric_for_best_model", "stsb_spearman",
+    #     "--load_best_model_at_end",
+    #     # "--eval_steps", "60",
+    #     # "--save_steps", "60",
+    #     "--pooler_type", "cls",
+    #     "--temp", "0.05",
+    #     "--do_mlm",
+    #     "--mlm_weight", "0.1",
+    #     "--logging_steps", "10",
+    #     "--logging_dir", "../train/checkpoints/sup-simcse-roberta-large-v1/runs",
+    #     "--hard_negative_weight", "0.1",
+    #     "--do_train",
+    #     "--do_eval",
+    #     "--overwrite_output_dir"
+    # ]
     main()

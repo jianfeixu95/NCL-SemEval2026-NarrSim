@@ -37,8 +37,10 @@ def convert_jsonl_to_csv(input_jsonl_file, output_csv_file):
 
 
 if __name__ == '__main__':
-    # input_jsonl_file = "../../../../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a.jsonl"  # 你的jsonl文件
+    input_jsonl_file = "../../../../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a.jsonl"  # 你的jsonl文件
+    output_csv_file = "../data/dev_track_a.csv"  # 输出csv文件
+    convert_jsonl_to_csv(input_jsonl_file, output_csv_file)
+
     input_jsonl_file = "../../../../semeval-2026-task-4-datasets/semeval-2026-task-4-train-v1/train_track_a.jsonl"  # 你的jsonl文件
-    # output_csv_file = "../data/dev_track_a.csv"  # 输出csv文件
     output_csv_file = "../data/train_track_a.csv"  # 输出csv文件
     convert_jsonl_to_csv(input_jsonl_file, output_csv_file)
