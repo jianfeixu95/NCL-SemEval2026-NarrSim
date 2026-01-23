@@ -2,6 +2,7 @@ import logging
 import math
 import os
 import sys
+import time
 from dataclasses import dataclass, field
 from typing import Optional, Union, List, Dict, Tuple
 import torch
@@ -156,6 +157,12 @@ class DataTrainingArguments:
         default=None, 
         metadata={"help": "The training data file (.txt or .csv)."}
     )
+
+    eval_file: Optional[str] = field(
+        default=None,
+        metadata={"help": "The evaluation data file (.txt or .csv)."}
+    )
+
     max_seq_length: Optional[int] = field(
         default=32,
         metadata={
@@ -190,6 +197,22 @@ class OurTrainingArguments(TrainingArguments):
     ## By default, we evaluate STS (dev) during training (for selecting best checkpoints) and evaluate 
     ## both STS and transfer tasks (dev) at the end of training. Using --eval_transfer will allow evaluating
     ## both STS and transfer tasks (dev) during training.
+
+    run_tag: Optional[str] = field(
+        default=None,
+        metadata={"help" : "The name of the model train experiment."}
+    )
+
+    run_id: Optional[str] = field(
+        default=None,
+        metadata={"help" : "The run id of the experiment."}
+    )
+
+    resume_from_checkpoint: bool= field(
+        default=False,
+        metadata={"help" : "Resume training from existed checkpointcheckpoint."}
+    )
+
     eval_transfer: bool = field(
         default=False,
         metadata={"help": "Evaluate transfer task dev sets (in validation)."}
@@ -249,7 +272,6 @@ def main():
     # or by passing the --help flag to this script.
     # We now keep distinct sets of args, for a cleaner separation of concerns.
 
-
     parser = HfArgumentParser((ModelArguments, DataTrainingArguments, OurTrainingArguments))
     if len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
         # If we pass only one argument to the script and it's the path to a json file,
@@ -272,6 +294,29 @@ def main():
             f"Output directory ({training_args.output_dir}) already exists and is not empty."
             "Use --overwrite_output_dir to overcome."
         )
+    else:
+        if training_args.resume_from_checkpoint:
+            if training_args.run_id is None:
+                raise ValueError(
+                    f"Checkpoint run id ({training_args.run_id}) is not provided."
+                )
+            else:
+                resume_checkpoint_path = os.path.join(training_args.output_dir, training_args.run_id)
+                model_args.model_name_or_path = os.path.join(resume_checkpoint_path, "checkpoint")
+                run_id = f"{training_args.run_tag}_{time.strftime('%Y%m%d_%H%M%S')}"
+                training_args.output_dir = os.path.join(training_args.output_dir, run_id)
+
+            logging.info(
+                f"Resume training from checkpoint {resume_checkpoint_path}, this training record will be saved in {training_args.output_dir}"
+            )
+        else:
+            if training_args.run_id is not None:
+                raise ValueError(
+                    f"If this training is not resuming from checkpoint, run_id ({training_args.run_id}) argument should not be provided."
+                )
+            else:
+                run_id = f"{training_args.run_tag}_{time.strftime('%Y%m%d_%H%M%S')}"
+            training_args.output_dir = os.path.join(training_args.output_dir, run_id)
 
     # Setup logging
     logging.basicConfig(
@@ -313,7 +358,7 @@ def main():
     if extension == "csv":
         datasets = load_dataset(extension, data_files=data_files, cache_dir="./data/", delimiter="\t" if "tsv" in data_args.train_file else ",")
     else:
-        datasets = load_dataset(extension, data_files=data_files, cache_dir="./data/")
+        raise TypeError(f"datasets extension {extension} is not supported.")
 
     # See more about loading any type of standard or custom dataset (from files, python dict, pandas DataFrame, etc) at
     # https://huggingface.co/docs/datasets/loading_datasets.html.
@@ -448,17 +493,14 @@ def main():
             
         return features
 
-    dataset = datasets["train"].train_test_split(test_size=0.2, seed=42)
     if training_args.do_train:
-        train_dataset = dataset["train"].map(
+        train_dataset = datasets["train"].map(
             prepare_features,
             batched=True,
             num_proc=data_args.preprocessing_num_workers,
             remove_columns=column_names,
             load_from_cache_file=not data_args.overwrite_cache,
         )
-    if training_args.do_eval:
-        eval_dataset = dataset["test"]
 
     # Data collator
     @dataclass
@@ -544,11 +586,11 @@ def main():
         model=model,
         args=training_args,
         train_dataset=train_dataset if training_args.do_train else None,
-        eval_dataset=eval_dataset if training_args.do_eval else None,
         tokenizer=tokenizer,
         data_collator=data_collator,
     )
     trainer.model_args = model_args
+    trainer.data_args = data_args
 
     # Training
     if training_args.do_train:
@@ -575,8 +617,7 @@ def main():
     results = {}
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
-        results = trainer.evaluate(eval_senteval_transfer=True)
-
+        results = trainer.evaluate(data_args.eval_file, eval_senteval_transfer=True)
         output_eval_file = os.path.join(training_args.output_dir, "eval_results.txt")
         if trainer.is_world_process_zero():
             with open(output_eval_file, "w") as writer:
@@ -595,24 +636,26 @@ def _mp_fn(index):
 if __name__ == "__main__":
     sys.argv = [
         "train.py",
-        "--model_name_or_path", "../checkpoints/facebookai-roberta-large",
-        "--train_file", "../data/nli_for_simcse_train.csv",
-        "--output_dir", "../train/checkpoints/self-simcse-roberta-large",
-        "--num_train_epochs", "1",
-        "--per_device_train_batch_size", "32",
+        "--run_tag", "finetune-princeton-nlp-sup-simcse-roberta-large",
+        "--model_name_or_path", "../checkpoints/princeton-nlp-sup-simcse-roberta-large",
+        "--train_file", "../data/train_track_a.csv",
+        "--eval_file", "../data/eval_track_a.csv",
+        "--output_dir", "../runs",
+        "--num_train_epochs", "5",
+        "--per_device_train_batch_size", "16",
         "--learning_rate", "5e-5",
         "--max_seq_length", "32",
-        "--evaluation_strategy", "steps",
-        "--metric_for_best_model", "stsb_spearman",
+        "--metric_for_best_model", "eval_accuracy",
         "--load_best_model_at_end",
-        "--eval_steps", "125",
-        "--save_steps", "125",
+        "--evaluation_strategy", "steps",
+        "--eval_steps", "20",
+        "--save_steps", "20",
         "--pooler_type", "cls",
         "--temp", "0.05",
         "--do_mlm",
         "--mlm_weight", "0.1",
-        "--logging_steps", "10",
-        "--logging_dir", "../train/checkpoints/self-simcse-roberta-large/runs",
+        "--logging_steps", "1",
+        "--logging_dir", "../logs",
         "--hard_negative_weight", "0.1",
         "--do_train",
         "--do_eval",
