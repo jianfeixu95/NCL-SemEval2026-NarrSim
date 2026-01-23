@@ -43,6 +43,6 @@ def main():
 
 if __name__ == "__main__":
     # sys.argv = [
-    #     "--path", "../train/checkpoints/sup-simcse-roberta-large-v1"
+    #     "--path", "../train/checkpoints/self-simcse-roberta-large",
     # ]
     main()

@@ -329,8 +329,6 @@ class BertForCL(BertPreTrainedModel):
                 mlm_labels=mlm_labels,
             )
 
-
-
 class RobertaForCL(RobertaPreTrainedModel):
     _keys_to_ignore_on_load_missing = [r"position_ids"]
 
