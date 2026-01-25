@@ -3,3 +3,8 @@ sentence-transformers==5.0.0
 openai==1.97.1
 google-genai
 tell_me_again
+flair
+tqdm
+pydantic
+torch
+numpy
