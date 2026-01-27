@@ -32,6 +32,6 @@ def convert_jsonl_to_csv(input_jsonl_file, output_csv_file):
 
 if __name__ == '__main__':
 
-    input_jsonl_file = "../data/dev_track_a.jsonl"  # 你的jsonl文件
-    output_csv_file = "../data/dev_track_a_test.csv"  # 输出csv文件
+    input_jsonl_file = "../data/dev_track_a_valid.jsonl"  # 你的jsonl文件
+    output_csv_file = "../data/dev_track_a_valid.csv"  # 输出csv文件
     convert_jsonl_to_csv(input_jsonl_file, output_csv_file)

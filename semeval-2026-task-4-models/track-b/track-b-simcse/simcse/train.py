@@ -500,7 +500,7 @@ def main():
             num_proc=data_args.preprocessing_num_workers,
             remove_columns=column_names,
             load_from_cache_file=not data_args.overwrite_cache,
-        )
+        ).shuffle(seed=42)
 
     # Data collator
     @dataclass
@@ -638,29 +638,30 @@ if __name__ == "__main__":
         "train.py",
         "--run_tag", "finetune-princeton-nlp-sup-simcse-roberta-large",
         "--model_name_or_path", "../checkpoints/princeton-nlp-sup-simcse-roberta-large",
-        "--train_file", "../data/train_track_a.csv",
-        "--eval_file", "../data/eval_track_a.csv",
+        "--train_file", "../data/story_analogy_flat_train.csv",
+        "--eval_file", "../data/dev_track_a_test.csv",
         "--output_dir", "../runs",
-        "--num_train_epochs", "5",
-        "--per_device_train_batch_size", "16",
-        "--learning_rate", "5e-5",
-        "--max_seq_length", "32",
+        "--num_train_epochs", "10",
+        "--per_device_train_batch_size", "2",
+        "--gradient_accumulation_steps", "8",
+        "--learning_rate", "5e-6",
+        "--max_seq_length", "400",
         "--metric_for_best_model", "eval_accuracy",
         "--load_best_model_at_end",
         "--evaluation_strategy", "steps",
-        "--eval_steps", "20",
-        "--save_steps", "20",
+        "--eval_steps", "5",
+        "--save_steps", "5",
         "--pooler_type", "cls",
         "--temp", "0.05",
         "--do_mlm",
         "--mlm_weight", "0.1",
         "--logging_steps", "1",
         "--logging_dir", "../logs",
-        "--hard_negative_weight", "0.1",
+        "--hard_negative_weight", "0.01",
         "--do_train",
         "--do_eval",
-        "--overwrite_output_dir",
-        "--fp16"
+        "--overwrite_output_dir"
+        # "--fp16"
         ]
     # sys.argv = [
     #     "train.py",
