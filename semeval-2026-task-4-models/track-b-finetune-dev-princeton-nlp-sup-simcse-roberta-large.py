@@ -9,9 +9,10 @@ import pandas as pd
 import sentence_transformers
 import torch
 from openai import models
-from sentence_transformers.util import cos_sim
 from sentence_transformers import SentenceTransformer
+from sentence_transformers.util import cos_sim
 import numpy as np
+from simcse import SimCSE
 
 def evaluate(labeled_data_path, embedding_lookup):
     df = pd.read_json(labeled_data_path, lines=True)
@@ -36,24 +37,18 @@ def evaluate(labeled_data_path, embedding_lookup):
 
 
 # Select baseline method
-data = pd.read_json("../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a.jsonl", lines=True)
-
-all_texts = list(set(data["anchor_text"]) |
-                 set(data["text_a"]) |
-                 set(data["text_b"]))
+data = pd.read_json("../semeval-2026-task-4-datasets/semeval-2026-Task-4-test-v1/test_track_b.jsonl", lines=True)
 
 model = SentenceTransformer(
-    # "track-b/track-b-simcse/checkpoints/princeton-nlp-sup-simcse-roberta-large",
-    "YuxinJiang/sup-promcse-roberta-large"
+    "track-b/track-b-simcse/runs/finetune-princeton-nlp-sup-simcse-roberta-large_20260125_145526"
 )
-
 embeddings = model.encode(
-    all_texts,
+    data["text"],
     batch_size=32,
     show_progress_bar=True)
 
-embedding_lookup = dict(zip(all_texts, embeddings))
-accuracy = evaluate("../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a.jsonl", embedding_lookup)
-print(f"Accuracy: {accuracy:.3f}")
+# embedding_lookup = dict(zip(data["text"], embeddings))
+# accuracy = evaluate("../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a.jsonl", embedding_lookup)
+# print(f"Accuracy: {accuracy:.3f}")
 
-np.save(f"track-b/experiments/self-simcse-roberta-large-v3/output/self-simcse-roberta-large-v3.npy", embeddings)
+np.save(f"track-b/experiments/track-b-finetune-dev-princeton-nlp-sup-simcse-roberta-large/output/track_b.npy", embeddings)

@@ -38,6 +38,6 @@ def convert_jsonl_to_csv(input_jsonl_file, output_csv_file):
 
 if __name__ == '__main__':
 
-    input_jsonl_file = "../data/train_track_a.jsonl"  # 你的jsonl文件
-    output_csv_file = "../data/train_track_a.csv"  # 输出csv文件
+    input_jsonl_file = "../data/story_analogy_flat_flipped.jsonl"  # 你的jsonl文件
+    output_csv_file = "../data/story_analogy_flat_train.csv"  # 输出csv文件
     convert_jsonl_to_csv(input_jsonl_file, output_csv_file)

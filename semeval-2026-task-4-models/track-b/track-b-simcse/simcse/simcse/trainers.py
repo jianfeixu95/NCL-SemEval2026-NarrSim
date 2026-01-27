@@ -149,7 +149,7 @@ class CLTrainer(Trainer):
             dict: 包含准确率等评估指标
         """
         # 加载数据
-        eval_file_path = "../data/eval_track_a.csv"
+        eval_file_path = "../data/dev_track_a_test.csv"
         eval_dataset = pd.read_csv(eval_file_path)
 
         # 批量嵌入文本（使用模型）
