@@ -7,3 +7,5 @@ prettytable
 gradio
 torch
 setuptools
+tensorboard
+senteval @ git+https://github.com/facebookresearch/SentEval.git

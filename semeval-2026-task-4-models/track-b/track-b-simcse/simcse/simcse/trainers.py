@@ -10,7 +10,11 @@ import time
 import warnings
 from pathlib import Path
 import importlib.util
+
+import pandas as pd
 from packaging import version
+import torch.nn.functional as F
+from torch.nn.functional import cosine_similarity
 from transformers import Trainer
 from transformers.modeling_utils import PreTrainedModel
 from transformers.training_args import ParallelMode, TrainingArguments
@@ -23,7 +27,6 @@ from transformers.trainer_utils import (
     PredictionOutput,
     TrainOutput,
     default_compute_objective,
-    default_hp_space,
     set_seed,
     speed_metrics,
 )
@@ -90,8 +93,105 @@ logger = logging.get_logger(__name__)
 
 class CLTrainer(Trainer):
 
+    def _embed_texts(self, texts, batch_size=128):
+        embs = []
+        self.model.eval()
+        for i in range(0, len(texts), batch_size):
+            batch_texts = texts[i:i+batch_size]
+            batch = self.tokenizer(
+                batch_texts,
+                return_tensors="pt",
+                padding=True,
+                truncation=True,          # 建议开启（否则可能超长）
+                max_length=self.args.max_seq_length if hasattr(self.args, "max_seq_length") else None,
+            )
+            batch = {k: v.to(self.args.device) for k, v in batch.items()}
+            with torch.no_grad():
+                outputs = self.model(**batch, return_dict=True, sent_emb=True)
+                emb = outputs.pooler_output
+                emb = F.normalize(emb, p=2, dim=-1)   # 关键：cosine 前先 normalize
+            embs.append(emb.cpu())
+        return torch.cat(embs, dim=0)
+
+    # def _eval_triplet_metrics(self, eval_dataset, metric_key_prefix="eval"):
+    #     anchors = eval_dataset["sent0"]
+    #     pos = eval_dataset["sent1"]
+    #     neg = eval_dataset["hard_neg"]
+    #
+    #     a_emb = self._embed_texts(anchors)
+    #     p_emb = self._embed_texts(pos)
+    #     n_emb = self._embed_texts(neg)
+    #
+    #     # cosine = dot，因为已经 normalize
+    #     s_pos = (a_emb * p_emb).sum(dim=-1)
+    #     s_neg = (a_emb * n_emb).sum(dim=-1)
+    #
+    #     diff = s_pos - s_neg
+    #     pair_acc = (diff > 0).float().mean().item()
+    #
+    #     metrics = {
+    #         f"{metric_key_prefix}_pair_acc": pair_acc,
+    #         f"{metric_key_prefix}_margin_mean": diff.mean().item(),
+    #         f"{metric_key_prefix}_pos_sim_mean": s_pos.mean().item(),
+    #         f"{metric_key_prefix}_neg_sim_mean": s_neg.mean().item(),
+    #     }
+    #     return metrics
+
+    def _eval_triplet_metrics(self, eval_file_path, metric_key_prefix="eval"):
+        """
+        用有监督数据计算模型评估准确率。
+
+        Args:
+            labeled_data_path (str): 带标签 JSONL 文件路径。
+            metric_key_prefix (str): 用于前缀标识返回的指标（如 eval_accuracy）
+
+        Returns:
+            dict: 包含准确率等评估指标
+        """
+        # 加载数据
+        eval_file_path = "../data/dev_track_a_test.csv"
+        eval_dataset = pd.read_csv(eval_file_path)
+
+        # 批量嵌入文本（使用模型）
+        all_texts = list(set(eval_dataset["anchor_text"]) |
+                         set(eval_dataset["text_a"]) |
+                         set(eval_dataset["text_b"]))
+
+        # 获取嵌入向量（建议你有 self._embed_texts() 方法）
+        embeddings = self._embed_texts(all_texts)  # shape: (N, D)
+
+        # 建立映射字典：text -> embedding tensor
+        embedding_lookup = dict(zip(all_texts, embeddings))
+
+        # 计算每行的相似度
+        sim_a = []
+        sim_b = []
+        for _, row in eval_dataset.iterrows():
+            a_emb = embedding_lookup[row["anchor_text"]]
+            emb_a = embedding_lookup[row["text_a"]]
+            emb_b = embedding_lookup[row["text_b"]]
+
+            sim_a.append(cosine_similarity(a_emb.unsqueeze(0), emb_a.unsqueeze(0)).item())
+            sim_b.append(cosine_similarity(a_emb.unsqueeze(0), emb_b.unsqueeze(0)).item())
+
+        eval_dataset["sim_a"] = sim_a
+        eval_dataset["sim_b"] = sim_b
+        eval_dataset["predicted_text_a_is_closer"] = eval_dataset["sim_a"] > eval_dataset["sim_b"]
+
+        # 计算准确率
+        accuracy = (eval_dataset["predicted_text_a_is_closer"] == eval_dataset["text_a_is_closer"]).mean()
+
+        # 可选：分析 margin 等信息
+        margin = (eval_dataset["sim_a"] - eval_dataset["sim_b"]).mean()
+
+        return {
+            f"{metric_key_prefix}_accuracy": accuracy,
+            f"{metric_key_prefix}_margin": margin
+        }
+
     def evaluate(
         self,
+        eval_file_path: Optional[str] = None,
         eval_dataset: Optional[Dataset] = None,
         ignore_keys: Optional[List[str]] = None,
         metric_key_prefix: str = "eval",
@@ -116,29 +216,36 @@ class CLTrainer(Trainer):
                 pooler_output = outputs.pooler_output
             return pooler_output.cpu()
 
-        # Set params for SentEval (fastmode)
-        params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 5}
-        params['classifier'] = {'nhid': 0, 'optim': 'rmsprop', 'batch_size': 128,
-                                            'tenacity': 3, 'epoch_size': 2}
+        metrics = {}
+        metrics.update(self._eval_triplet_metrics(eval_file_path, metric_key_prefix=metric_key_prefix))
 
-        se = senteval.engine.SE(params, batcher, prepare)
-        tasks = ['STSBenchmark', 'SICKRelatedness']
-        if eval_senteval_transfer or self.args.eval_transfer:
-            tasks = ['STSBenchmark', 'SICKRelatedness', 'MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']
-        self.model.eval()
-        results = se.eval(tasks)
-        
-        stsb_spearman = results['STSBenchmark']['dev']['spearman'][0]
-        sickr_spearman = results['SICKRelatedness']['dev']['spearman'][0]
-
-        metrics = {"eval_stsb_spearman": stsb_spearman, "eval_sickr_spearman": sickr_spearman, "eval_avg_sts": (stsb_spearman + sickr_spearman) / 2} 
-        if eval_senteval_transfer or self.args.eval_transfer:
-            avg_transfer = 0
-            for task in ['MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']:
-                avg_transfer += results[task]['devacc']
-                metrics['eval_{}'.format(task)] = results[task]['devacc']
-            avg_transfer /= 7
-            metrics['eval_avg_transfer'] = avg_transfer
+        # # Set params for SentEval (fastmode)
+        # params = {'task_path': PATH_TO_DATA, 'usepytorch': True, 'kfold': 5}
+        # params['classifier'] = {'nhid': 0, 'optim': 'rmsprop', 'batch_size': 128,
+        #                                     'tenacity': 3, 'epoch_size': 2}
+        #
+        # se = senteval.engine.SE(params, batcher, prepare)
+        # tasks = ['STSBenchmark', 'SICKRelatedness']
+        # if eval_senteval_transfer or self.args.eval_transfer:
+        #     tasks = ['STSBenchmark', 'SICKRelatedness', 'MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']
+        # self.model.eval()
+        # results = se.eval(tasks)
+        #
+        # stsb_spearman = results['STSBenchmark']['dev']['spearman'][0]
+        # sickr_spearman = results['SICKRelatedness']['dev']['spearman'][0]
+        #
+        # metrics.update({
+        #     "eval_stsb_spearman": stsb_spearman,
+        #     "eval_sickr_spearman": sickr_spearman,
+        #     "eval_avg_sts": (stsb_spearman + sickr_spearman) / 2}
+        # )
+        # if eval_senteval_transfer or self.args.eval_transfer:
+        #     avg_transfer = 0
+        #     for task in ['MR', 'CR', 'SUBJ', 'MPQA', 'SST2', 'TREC', 'MRPC']:
+        #         avg_transfer += results[task]['devacc']
+        #         metrics['eval_{}'.format(task)] = results[task]['devacc']
+        #     avg_transfer /= 7
+        #     metrics['eval_avg_transfer'] = avg_transfer
 
         self.log(metrics)
         return metrics

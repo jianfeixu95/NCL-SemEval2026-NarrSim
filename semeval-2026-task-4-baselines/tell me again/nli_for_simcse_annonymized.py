@@ -27,9 +27,9 @@ def anonymize_text(text):
     return processed_text
 
 # 2. 定义待处理的文件列表（改为 xls）
-data_dir = 'tell me again'  # <-- 改成你的文件夹名，比如 'tell me again'；若就在当前目录用 '.'
+data_dir = '.'  # <-- 改成你的文件夹名，比如 'tell me again'；若就在当前目录用 '.'
 files_to_process = [
-    'nli_for_simcse.xls'
+    'nli_for_simcse.csv'
 ]
 
 print(f"{'='*20} 开始批量执行匿名化预处理 {'='*20}\n")
@@ -37,14 +37,14 @@ print(f"{'='*20} 开始批量执行匿名化预处理 {'='*20}\n")
 # 外层进度条：监控文件整体处理进度
 for filename in tqdm(files_to_process, desc="整体文件进度"):
     input_path = os.path.join(data_dir, filename)
-    output_path = os.path.join(data_dir, filename.replace('.xls', '_processed.xlsx'))
+    output_path = os.path.join(data_dir, filename.replace('.csv', '_processed.csv'))
 
     if not os.path.exists(input_path):
         tqdm.write(f"跳过文件（未找到）: {filename}")
         continue
 
     # 读取 xls（需要 xlrd 支持）
-    df = pd.read_excel(input_path, engine='xlrd')
+    df = pd.read_csv(input_path, encoding='utf-8')
 
     # 预先计算行数，用于内层进度条的 total 参数
     line_count = len(df)
@@ -58,7 +58,7 @@ for filename in tqdm(files_to_process, desc="整体文件进度"):
     # ==========================
     # 中间落盘/断点续跑逻辑（按你给的结构嵌入）
     # ==========================
-    tmp_output_path = output_path.replace('.xlsx', '_tmp.pkl')  # 用pkl做中间缓存最稳（注意这里是 .xlsx）
+    tmp_output_path = output_path.replace('.csv', '_tmp.pkl')  # 用pkl做中间缓存最稳（注意这里是 .xlsx）
     save_every = 500
 
     # 如果之前跑崩过，尝试从缓存恢复
@@ -124,7 +124,8 @@ for filename in tqdm(files_to_process, desc="整体文件进度"):
     df['sent0_anon'] = sent0_anon_list
     df['sent1_anon'] = sent1_anon_list
     df['hard_neg_anon'] = hard_neg_anon_list
-    df.to_excel(output_path, index=False)  # 不写engine更稳
+
+    df.to_csv(output_path, index=False)    # 不写engine更稳
 
     # 成功后删缓存
     if os.path.exists(tmp_output_path):
