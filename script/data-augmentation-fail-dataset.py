@@ -61,13 +61,13 @@ def filter_csv_by_missing_anchor(
 
 
 if __name__ == "__main__":
-    csv_path = "../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a_train.csv"
-    jsonl_path = "../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a_train_augmented.jsonl"
+    csv_path = "../semeval-2026-task-4-datasets/story-analogy/story_analogy_flat_train.csv"
+    jsonl_path = "../semeval-2026-task-4-datasets/story-analogy/story_analogy_flat_train_augmented.jsonl"
 
     filter_csv_by_missing_anchor(
         csv_path=csv_path,
         jsonl_path=jsonl_path,
         csv_anchor_col="sent0",   # CSV 中 anchor 列名
         jsonl_anchor_key="anchor_prototype", # JSONL 中 anchor 的 key（如果叫 anchor 就改成 "anchor"）
-        output_csv_path="../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a_train_buchong.csv"
+        output_csv_path="../semeval-2026-task-4-datasets/story-analogy/story_analogy_flat_train_buchong.csv"
     )
