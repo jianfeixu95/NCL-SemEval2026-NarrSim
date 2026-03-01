@@ -25,6 +25,6 @@ def convert_track_a_data_to_track_b_data(input_path, output_path):
     print("Saved to:", output_path)
 
 if __name__ == '__main__':
-    input_path = "../semeval-2026-task-4-datasets/semeval-2026-task-4-train-v1/train_track_a.jsonl"
-    output_path = "../semeval-2026-task-4-datasets/semeval-2026-task-4-train-v1/train_track_b.jsonl"
+    input_path = "./baseline/data/dev_track_a_train.jsonl"
+    output_path = "./baseline/data/dev_track_b_train.jsonl"
     convert_track_a_data_to_track_b_data(input_path, output_path)

@@ -1,0 +1,402 @@
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large  --pooler cls     --task_set sts     --mode test
+2026-02-10 18:13:10,707 : Starting new HTTPS connection (1): huggingface.co:443
+2026-02-10 18:13:10,888 : https://huggingface.co:443 "HEAD /semeval-2026-task-4-baselines/checkpoints/longformer-large/resolve/main/config.json HTTP/11" 404 0
+404 Client Error: Not Found for url: https://huggingface.co/semeval-2026-task-4-baselines/checkpoints/longformer-large/resolve/main/config.json
+Traceback (most recent call last):
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/configuration_utils.py", line 413, in get_config_dict
+    resolved_config_file = cached_path(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/file_utils.py", line 1048, in cached_path
+    output_path = get_from_cache(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/file_utils.py", line 1186, in get_from_cache
+    r.raise_for_status()
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://huggingface.co/semeval-2026-task-4-baselines/checkpoints/longformer-large/resolve/main/config.json
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 53, in main
+    model = AutoModel.from_pretrained(args.model_name_or_path)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/modeling_auto.py", line 723, in from_pretrained
+    config, kwargs = AutoConfig.from_pretrained(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/configuration_auto.py", line 360, in from_pretrained
+    config_dict, _ = PretrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/configuration_utils.py", line 432, in get_config_dict
+    raise EnvironmentError(msg)
+OSError: Can't load config for '../../semeval-2026-task-4-baselines/checkpoints/longformer-large'. Make sure that:
+
+- '../../semeval-2026-task-4-baselines/checkpoints/longformer-large' is a correct model identifier listed on 'https://huggingface.co/models'
+
+- or '../../semeval-2026-task-4-baselines/checkpoints/longformer-large' is the correct path to a directory containing a config.json file
+
+
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large-4096  --pooler cls
+ --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+2026-02-10 18:13:36,060 : ***** Transfer task : STS12 *****
+
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 144, in main
+    result = se.eval(task)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/engine.py", line 127, in eval
+    self.results = self.evaluation.run(self.params, self.batcher)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/sts.py", line 72, in run
+    enc1 = batcher(params, batch1)
+  File "evaluation.py", line 114, in batcher
+    outputs = model(**batch, output_hidden_states=True, return_dict=True)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1616, in forward
+    encoder_outputs = self.encoder(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1244, in forward
+    layer_outputs = layer_module(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1178, in forward
+    self_attn_outputs = self.attention(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1116, in forward
+    self_outputs = self.self(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 640, in forward
+    attn_probs = F.softmax(attn_scores, dim=-1, dtype=torch.float32)  # use fp32 for numerical stability
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/functional.py", line 1890, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 GiB. GPU 0 has a total capacity of 15.60 GiB of which 275.94 MiB is free. Including non-PyTorch memory, this process has 15.11 GiB memory in use. Of the allocated memory 11.01 GiB is allocated by PyTorch, and 3.90 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large-4096  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+2026-02-10 18:14:30,813 : ***** Transfer task : STS12 *****
+
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 144, in main
+    result = se.eval(task)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/engine.py", line 127, in eval
+    self.results = self.evaluation.run(self.params, self.batcher)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/sts.py", line 72, in run
+    enc1 = batcher(params, batch1)
+  File "evaluation.py", line 114, in batcher
+    outputs = model(**batch, output_hidden_states=True, return_dict=True)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1616, in forward
+    encoder_outputs = self.encoder(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1244, in forward
+    layer_outputs = layer_module(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1178, in forward
+    self_attn_outputs = self.attention(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1116, in forward
+    self_outputs = self.self(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 640, in forward
+    attn_probs = F.softmax(attn_scores, dim=-1, dtype=torch.float32)  # use fp32 for numerical stability
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/functional.py", line 1890, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 GiB. GPU 0 has a total capacity of 15.60 GiB of which 275.94 MiB is free. Including non-PyTorch memory, this process has 15.11 GiB memory in use. Of the allocated memory 11.01 GiB is allocated by PyTorch, and 3.90 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large-4096  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+2026-02-10 18:14:56,646 : ***** Transfer task : STS12 *****
+
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 144, in main
+    result = se.eval(task)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/engine.py", line 127, in eval
+    self.results = self.evaluation.run(self.params, self.batcher)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/sts.py", line 72, in run
+    enc1 = batcher(params, batch1)
+  File "evaluation.py", line 114, in batcher
+    outputs = model(**batch, output_hidden_states=True, return_dict=True)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1616, in forward
+    encoder_outputs = self.encoder(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1244, in forward
+    layer_outputs = layer_module(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1178, in forward
+    self_attn_outputs = self.attention(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1116, in forward
+    self_outputs = self.self(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 640, in forward
+    attn_probs = F.softmax(attn_scores, dim=-1, dtype=torch.float32)  # use fp32 for numerical stability
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/functional.py", line 1890, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 GiB. GPU 0 has a total capacity of 15.60 GiB of which 275.94 MiB is free. Including non-PyTorch memory, this process has 15.11 GiB memory in use. Of the allocated memory 11.01 GiB is allocated by PyTorch, and 3.90 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large-4096  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+2026-02-10 18:15:20,695 : ***** Transfer task : STS12 *****
+
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 144, in main
+    result = se.eval(task)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/engine.py", line 127, in eval
+    self.results = self.evaluation.run(self.params, self.batcher)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/sts.py", line 72, in run
+    enc1 = batcher(params, batch1)
+  File "evaluation.py", line 114, in batcher
+    outputs = model(**batch, output_hidden_states=True, return_dict=True)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1616, in forward
+    encoder_outputs = self.encoder(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1244, in forward
+    layer_outputs = layer_module(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1178, in forward
+    self_attn_outputs = self.attention(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1116, in forward
+    self_outputs = self.self(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 640, in forward
+    attn_probs = F.softmax(attn_scores, dim=-1, dtype=torch.float32)  # use fp32 for numerical stability
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/functional.py", line 1890, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 GiB. GPU 0 has a total capacity of 15.60 GiB of which 275.94 MiB is free. Including non-PyTorch memory, this process has 15.11 GiB memory in use. Of the allocated memory 11.01 GiB is allocated by PyTorch, and 3.90 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large-4096  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+2026-02-10 18:15:39,153 : ***** Transfer task : STS12 *****
+
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 144, in main
+    result = se.eval(task)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/engine.py", line 127, in eval
+    self.results = self.evaluation.run(self.params, self.batcher)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/sts.py", line 72, in run
+    enc1 = batcher(params, batch1)
+  File "evaluation.py", line 114, in batcher
+    outputs = model(**batch, output_hidden_states=True, return_dict=True)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1616, in forward
+    encoder_outputs = self.encoder(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1244, in forward
+    layer_outputs = layer_module(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1178, in forward
+    self_attn_outputs = self.attention(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1116, in forward
+    self_outputs = self.self(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 640, in forward
+    attn_probs = F.softmax(attn_scores, dim=-1, dtype=torch.float32)  # use fp32 for numerical stability
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/functional.py", line 1890, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 GiB. GPU 0 has a total capacity of 15.60 GiB of which 275.94 MiB is free. Including non-PyTorch memory, this process has 15.11 GiB memory in use. Of the allocated memory 11.01 GiB is allocated by PyTorch, and 3.90 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/longformer-large-4096  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+2026-02-10 18:15:59,077 : ***** Transfer task : STS12 *****
+
+
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 144, in main
+    result = se.eval(task)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/engine.py", line 127, in eval
+    self.results = self.evaluation.run(self.params, self.batcher)
+  File "/home/c2014047/Documents/project/NCL-SemEval2026-NarrSim/script/baseline/./SentEval/senteval/sts.py", line 72, in run
+    enc1 = batcher(params, batch1)
+  File "evaluation.py", line 114, in batcher
+    outputs = model(**batch, output_hidden_states=True, return_dict=True)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1616, in forward
+    encoder_outputs = self.encoder(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1244, in forward
+    layer_outputs = layer_module(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1178, in forward
+    self_attn_outputs = self.attention(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 1116, in forward
+    self_outputs = self.self(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1553, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1562, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/longformer/modeling_longformer.py", line 640, in forward
+    attn_probs = F.softmax(attn_scores, dim=-1, dtype=torch.float32)  # use fp32 for numerical stability
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/torch/nn/functional.py", line 1890, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.00 GiB. GPU 0 has a total capacity of 15.60 GiB of which 275.94 MiB is free. Including non-PyTorch memory, this process has 15.11 GiB memory in use. Of the allocated memory 11.01 GiB is allocated by PyTorch, and 3.90 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/flan-t5-base  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+Some weights of the model checkpoint at ../../semeval-2026-task-4-baselines/checkpoints/flan-t5-base were not used when initializing T5Model: ['lm_head.weight']
+- This IS expected if you are initializing T5Model from the checkpoint of a model trained on another task or with another architecture (e.g. initializing a BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing T5Model from the checkpoint of a model that you expect to be exactly identical (initializing a BertForSequenceClassification model from a BertForSequenceClassification model).
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 54, in main
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/tokenization_auto.py", line 385, in from_pretrained
+    return tokenizer_class_fast.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/tokenization_utils_base.py", line 1768, in from_pretrained
+    return cls._from_pretrained(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/tokenization_utils_base.py", line 1841, in _from_pretrained
+    tokenizer = cls(*init_inputs, **init_kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/t5/tokenization_t5_fast.py", line 139, in __init__
+    super().__init__(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/tokenization_utils_fast.py", line 86, in __init__
+    fast_tokenizer = TokenizerFast.from_file(fast_tokenizer_file)
+Exception: data did not match any variant of untagged enum PyPreTokenizerTypeWrapper at line 954 column 3
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/story-emb  --pooler cls     --task_set sts     --mode test
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 53, in main
+    model = AutoModel.from_pretrained(args.model_name_or_path)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/modeling_auto.py", line 723, in from_pretrained
+    config, kwargs = AutoConfig.from_pretrained(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/configuration_auto.py", line 363, in from_pretrained
+    config_class = CONFIG_MAPPING[config_dict["model_type"]]
+KeyError: 'mistral'
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/modernbert-base  --pooler cls     --task_set sts     --mode test
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 53, in main
+    model = AutoModel.from_pretrained(args.model_name_or_path)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/modeling_auto.py", line 723, in from_pretrained
+    config, kwargs = AutoConfig.from_pretrained(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/configuration_auto.py", line 363, in from_pretrained
+    config_class = CONFIG_MAPPING[config_dict["model_type"]]
+KeyError: 'modernbert'
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$ python evaluation.py     --model_name_or_path ../../semeval-2026-task-4-baselines/checkpoints/sentence-t5-base  --pooler cls     --task_set sts     --mode test
+/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/modeling_utils.py:1038: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = torch.load(resolved_archive_file, map_location="cpu")
+Some weights of T5Model were not initialized from the model checkpoint at ../../semeval-2026-task-4-baselines/checkpoints/sentence-t5-base and are newly initialized: ['decoder.block.0.layer.0.SelfAttention.q.weight', 'decoder.block.0.layer.0.SelfAttention.k.weight', 'decoder.block.0.layer.0.SelfAttention.v.weight', 'decoder.block.0.layer.0.SelfAttention.o.weight', 'decoder.block.0.layer.0.SelfAttention.relative_attention_bias.weight', 'decoder.block.0.layer.0.layer_norm.weight', 'decoder.block.0.layer.1.EncDecAttention.q.weight', 'decoder.block.0.layer.1.EncDecAttention.k.weight', 'decoder.block.0.layer.1.EncDecAttention.v.weight', 'decoder.block.0.layer.1.EncDecAttention.o.weight', 'decoder.block.0.layer.1.layer_norm.weight', 'decoder.block.0.layer.2.DenseReluDense.wi.weight', 'decoder.block.0.layer.2.DenseReluDense.wo.weight', 'decoder.block.0.layer.2.layer_norm.weight', 'decoder.block.1.layer.0.SelfAttention.q.weight', 'decoder.block.1.layer.0.SelfAttention.k.weight', 'decoder.block.1.layer.0.SelfAttention.v.weight', 'decoder.block.1.layer.0.SelfAttention.o.weight', 'decoder.block.1.layer.0.layer_norm.weight', 'decoder.block.1.layer.1.EncDecAttention.q.weight', 'decoder.block.1.layer.1.EncDecAttention.k.weight', 'decoder.block.1.layer.1.EncDecAttention.v.weight', 'decoder.block.1.layer.1.EncDecAttention.o.weight', 'decoder.block.1.layer.1.layer_norm.weight', 'decoder.block.1.layer.2.DenseReluDense.wi.weight', 'decoder.block.1.layer.2.DenseReluDense.wo.weight', 'decoder.block.1.layer.2.layer_norm.weight', 'decoder.block.2.layer.0.SelfAttention.q.weight', 'decoder.block.2.layer.0.SelfAttention.k.weight', 'decoder.block.2.layer.0.SelfAttention.v.weight', 'decoder.block.2.layer.0.SelfAttention.o.weight', 'decoder.block.2.layer.0.layer_norm.weight', 'decoder.block.2.layer.1.EncDecAttention.q.weight', 'decoder.block.2.layer.1.EncDecAttention.k.weight', 'decoder.block.2.layer.1.EncDecAttention.v.weight', 'decoder.block.2.layer.1.EncDecAttention.o.weight', 'decoder.block.2.layer.1.layer_norm.weight', 'decoder.block.2.layer.2.DenseReluDense.wi.weight', 'decoder.block.2.layer.2.DenseReluDense.wo.weight', 'decoder.block.2.layer.2.layer_norm.weight', 'decoder.block.3.layer.0.SelfAttention.q.weight', 'decoder.block.3.layer.0.SelfAttention.k.weight', 'decoder.block.3.layer.0.SelfAttention.v.weight', 'decoder.block.3.layer.0.SelfAttention.o.weight', 'decoder.block.3.layer.0.layer_norm.weight', 'decoder.block.3.layer.1.EncDecAttention.q.weight', 'decoder.block.3.layer.1.EncDecAttention.k.weight', 'decoder.block.3.layer.1.EncDecAttention.v.weight', 'decoder.block.3.layer.1.EncDecAttention.o.weight', 'decoder.block.3.layer.1.layer_norm.weight', 'decoder.block.3.layer.2.DenseReluDense.wi.weight', 'decoder.block.3.layer.2.DenseReluDense.wo.weight', 'decoder.block.3.layer.2.layer_norm.weight', 'decoder.block.4.layer.0.SelfAttention.q.weight', 'decoder.block.4.layer.0.SelfAttention.k.weight', 'decoder.block.4.layer.0.SelfAttention.v.weight', 'decoder.block.4.layer.0.SelfAttention.o.weight', 'decoder.block.4.layer.0.layer_norm.weight', 'decoder.block.4.layer.1.EncDecAttention.q.weight', 'decoder.block.4.layer.1.EncDecAttention.k.weight', 'decoder.block.4.layer.1.EncDecAttention.v.weight', 'decoder.block.4.layer.1.EncDecAttention.o.weight', 'decoder.block.4.layer.1.layer_norm.weight', 'decoder.block.4.layer.2.DenseReluDense.wi.weight', 'decoder.block.4.layer.2.DenseReluDense.wo.weight', 'decoder.block.4.layer.2.layer_norm.weight', 'decoder.block.5.layer.0.SelfAttention.q.weight', 'decoder.block.5.layer.0.SelfAttention.k.weight', 'decoder.block.5.layer.0.SelfAttention.v.weight', 'decoder.block.5.layer.0.SelfAttention.o.weight', 'decoder.block.5.layer.0.layer_norm.weight', 'decoder.block.5.layer.1.EncDecAttention.q.weight', 'decoder.block.5.layer.1.EncDecAttention.k.weight', 'decoder.block.5.layer.1.EncDecAttention.v.weight', 'decoder.block.5.layer.1.EncDecAttention.o.weight', 'decoder.block.5.layer.1.layer_norm.weight', 'decoder.block.5.layer.2.DenseReluDense.wi.weight', 'decoder.block.5.layer.2.DenseReluDense.wo.weight', 'decoder.block.5.layer.2.layer_norm.weight', 'decoder.block.6.layer.0.SelfAttention.q.weight', 'decoder.block.6.layer.0.SelfAttention.k.weight', 'decoder.block.6.layer.0.SelfAttention.v.weight', 'decoder.block.6.layer.0.SelfAttention.o.weight', 'decoder.block.6.layer.0.layer_norm.weight', 'decoder.block.6.layer.1.EncDecAttention.q.weight', 'decoder.block.6.layer.1.EncDecAttention.k.weight', 'decoder.block.6.layer.1.EncDecAttention.v.weight', 'decoder.block.6.layer.1.EncDecAttention.o.weight', 'decoder.block.6.layer.1.layer_norm.weight', 'decoder.block.6.layer.2.DenseReluDense.wi.weight', 'decoder.block.6.layer.2.DenseReluDense.wo.weight', 'decoder.block.6.layer.2.layer_norm.weight', 'decoder.block.7.layer.0.SelfAttention.q.weight', 'decoder.block.7.layer.0.SelfAttention.k.weight', 'decoder.block.7.layer.0.SelfAttention.v.weight', 'decoder.block.7.layer.0.SelfAttention.o.weight', 'decoder.block.7.layer.0.layer_norm.weight', 'decoder.block.7.layer.1.EncDecAttention.q.weight', 'decoder.block.7.layer.1.EncDecAttention.k.weight', 'decoder.block.7.layer.1.EncDecAttention.v.weight', 'decoder.block.7.layer.1.EncDecAttention.o.weight', 'decoder.block.7.layer.1.layer_norm.weight', 'decoder.block.7.layer.2.DenseReluDense.wi.weight', 'decoder.block.7.layer.2.DenseReluDense.wo.weight', 'decoder.block.7.layer.2.layer_norm.weight', 'decoder.block.8.layer.0.SelfAttention.q.weight', 'decoder.block.8.layer.0.SelfAttention.k.weight', 'decoder.block.8.layer.0.SelfAttention.v.weight', 'decoder.block.8.layer.0.SelfAttention.o.weight', 'decoder.block.8.layer.0.layer_norm.weight', 'decoder.block.8.layer.1.EncDecAttention.q.weight', 'decoder.block.8.layer.1.EncDecAttention.k.weight', 'decoder.block.8.layer.1.EncDecAttention.v.weight', 'decoder.block.8.layer.1.EncDecAttention.o.weight', 'decoder.block.8.layer.1.layer_norm.weight', 'decoder.block.8.layer.2.DenseReluDense.wi.weight', 'decoder.block.8.layer.2.DenseReluDense.wo.weight', 'decoder.block.8.layer.2.layer_norm.weight', 'decoder.block.9.layer.0.SelfAttention.q.weight', 'decoder.block.9.layer.0.SelfAttention.k.weight', 'decoder.block.9.layer.0.SelfAttention.v.weight', 'decoder.block.9.layer.0.SelfAttention.o.weight', 'decoder.block.9.layer.0.layer_norm.weight', 'decoder.block.9.layer.1.EncDecAttention.q.weight', 'decoder.block.9.layer.1.EncDecAttention.k.weight', 'decoder.block.9.layer.1.EncDecAttention.v.weight', 'decoder.block.9.layer.1.EncDecAttention.o.weight', 'decoder.block.9.layer.1.layer_norm.weight', 'decoder.block.9.layer.2.DenseReluDense.wi.weight', 'decoder.block.9.layer.2.DenseReluDense.wo.weight', 'decoder.block.9.layer.2.layer_norm.weight', 'decoder.block.10.layer.0.SelfAttention.q.weight', 'decoder.block.10.layer.0.SelfAttention.k.weight', 'decoder.block.10.layer.0.SelfAttention.v.weight', 'decoder.block.10.layer.0.SelfAttention.o.weight', 'decoder.block.10.layer.0.layer_norm.weight', 'decoder.block.10.layer.1.EncDecAttention.q.weight', 'decoder.block.10.layer.1.EncDecAttention.k.weight', 'decoder.block.10.layer.1.EncDecAttention.v.weight', 'decoder.block.10.layer.1.EncDecAttention.o.weight', 'decoder.block.10.layer.1.layer_norm.weight', 'decoder.block.10.layer.2.DenseReluDense.wi.weight', 'decoder.block.10.layer.2.DenseReluDense.wo.weight', 'decoder.block.10.layer.2.layer_norm.weight', 'decoder.block.11.layer.0.SelfAttention.q.weight', 'decoder.block.11.layer.0.SelfAttention.k.weight', 'decoder.block.11.layer.0.SelfAttention.v.weight', 'decoder.block.11.layer.0.SelfAttention.o.weight', 'decoder.block.11.layer.0.layer_norm.weight', 'decoder.block.11.layer.1.EncDecAttention.q.weight', 'decoder.block.11.layer.1.EncDecAttention.k.weight', 'decoder.block.11.layer.1.EncDecAttention.v.weight', 'decoder.block.11.layer.1.EncDecAttention.o.weight', 'decoder.block.11.layer.1.layer_norm.weight', 'decoder.block.11.layer.2.DenseReluDense.wi.weight', 'decoder.block.11.layer.2.DenseReluDense.wo.weight', 'decoder.block.11.layer.2.layer_norm.weight', 'decoder.final_layer_norm.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+Traceback (most recent call last):
+  File "evaluation.py", line 205, in <module>
+    main()
+  File "evaluation.py", line 54, in main
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/auto/tokenization_auto.py", line 385, in from_pretrained
+    return tokenizer_class_fast.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/tokenization_utils_base.py", line 1768, in from_pretrained
+    return cls._from_pretrained(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/tokenization_utils_base.py", line 1841, in _from_pretrained
+    tokenizer = cls(*init_inputs, **init_kwargs)
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/models/t5/tokenization_t5_fast.py", line 139, in __init__
+    super().__init__(
+  File "/home/c2014047/miniconda3/envs/track-b-simcse/lib/python3.8/site-packages/transformers/tokenization_utils_fast.py", line 86, in __init__
+    fast_tokenizer = TokenizerFast.from_file(fast_tokenizer_file)
+Exception: data did not match any variant of untagged enum PyPreTokenizerTypeWrapper at line 1 column 329732
+(track-b-simcse) c2014047@sage-304140:~/Documents/project/NCL-SemEval2026-NarrSim/script/baseline$
