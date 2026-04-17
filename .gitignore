@@ -4,3 +4,7 @@ semeval-2026-task-4-models/track-b/track-b-simcse/checkpoints
 semeval-2026-task-4-models/track-b/track-b-simcse/sup-simcse-roberta-large
 semeval-2026-task-4-models/track-b/track-b-simcse/train
 semeval-2026-task-4-models/track-b/track-b-simcse/train/checkpoints
+semeval-2026-task-4-datasets/docnli
+semeval-2026-task-4-baselines/checkpoints/
+*.pt
+*.bin

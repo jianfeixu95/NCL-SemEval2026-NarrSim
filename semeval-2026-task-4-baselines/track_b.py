@@ -35,19 +35,13 @@ def evaluate(labeled_data_path, embedding_lookup):
 
 
 # Select baseline method
-baseline = "sbert"  # or "random"
-data = pd.read_json("data/dev_track_b.jsonl", lines=True)
 
-if baseline == "sbert":
-    model = SentenceTransformer("all-MiniLM-L6-v2")
-    embeddings = model.encode(data["text"], show_progress_bar=True)
-elif baseline == "random":
-    embeddings = torch.rand((len(data), 512))
-else:
-    sys.exit("Invalid baseline")
+data = pd.read_json("../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_b.jsonl", lines=True)
+model = SentenceTransformer("checkpoints/finetune-princeton-nlp-sup-simcse-roberta-large_20260301_211532")
+embeddings = model.encode(data["text"], show_progress_bar=True)
 
 embedding_lookup = dict(zip(data["text"], embeddings))
-accuracy = evaluate("data/dev_track_a.jsonl", embedding_lookup)
-print(f"Accuracy: {accuracy:.3f}")
+accuracy = evaluate("../semeval-2026-task-4-datasets/semeval-2026-task-4-dev-v1/dev_track_a.jsonl", embedding_lookup)
+print(f"Accuracy: {accuracy*100:.2f}")
 
-np.save("output/track_b.npy", embeddings)
+# np.save("output/track_b.npy", embeddings)

@@ -52,34 +52,31 @@ You are a professional narrative data constructor. Based on three narrative prot
    - Abstract Theme: the underlying ideas, metaphors, motivations, and internal logic of the story
    - Course of Action: the sequence of central developments, recurring patterns, and at least one clear turning point or threshold moment
    - Outcomes: the results, consequences, and how they reflect or reframe the abstract theme
+
 3) Semantic relationship constraints:
    - anchor_text: serves as the semantic reference narrative.
-   - text_a: must be highly similar to anchor_text in theme and overall meaning.
+   - text_a: must be highly similar to anchor_text in underlying theme, causal structure, and overall meaning.
    - text_b: may share surface-level expressions with anchor_text, but must clearly diverge in core theme and/or final outcome.
+
 4) Anti-lexical-overlap strategy (critical; obey strictly):
-    A) Phrase-level constraint:
-    - Do NOT reuse any 4-or-more consecutive-word phrase across the three narratives.
-    - Do NOT copy any phrase from the prototype sentences verbatim.
-    B) Surface entity de-coupling:
-    - Use different characters, roles, settings, professions, objects, and concrete imagery across anchor_text, text_a, and text_b.
-    - Avoid reusing distinctive proper nouns or concrete nouns across narratives.
-    C) Abstract concept de-coupling (most important):
-    - Do NOT rely on repeating abstract narrative vocabulary (e.g., words expressing success/failure, growth/decline, responsibility, realization, decision, consequence, change, struggle, purpose, outcome) to signal similarity.
-    - When two narratives share the same underlying meaning, express it using different abstract conceptual framings (e.g., moral tension vs. systemic pressure, internal conflict vs. external constraint, accumulation vs. rupture).
-    - The same causal role must be realized through different abstract descriptions rather than shared evaluative or psychological terms.
-    D) Similarity signaling rule:
-    - Similarity or dissimilarity must be inferable primarily from event alignment, causal position, and narrative structure, NOT from shared abstract vocabulary or evaluative language.
-5) Length and output format:
-   - Each narrative should be approximately 750–950 words (reasonable variation allowed, but do NOT go below 700 words or above 1100 words).
-   - You must output valid JSON only. Do NOT include explanations, comments, markdown, or any extra text. The JSON object must contain exactly three keys, spelled exactly as follows:
+   A) Phrase-level constraint:
+      - Do NOT reuse any 4-or-more consecutive-word phrase across the three narratives.
+      - Do NOT copy any phrase from the prototype sentences verbatim.
+   B) Surface entity de-coupling:
+      - Use different characters, roles, settings, professions, objects, and concrete imagery across anchor_text, text_a, and text_b.
+      - Avoid reusing distinctive proper nouns or concrete nouns across narratives.
+
+### Length and output format:
+- Each narrative should be approximately 750–950 words (reasonable variation allowed, but do NOT go below 700 words or above 1100 words).
+- You must output valid JSON only. Do NOT include explanations, comments, markdown, or any extra text. The JSON object must contain exactly three keys, spelled exactly as follows:
 {{
   "anchor_text": "...",
   "text_a": "...",
   "text_b": "..."
 }}
-   - Each value must be a single English paragraph enclosed in double quotes.
-   - Do NOT include newline characters inside the text values.
-   - Do NOT include any extra keys.
+- Each value must be a single English paragraph enclosed in double quotes.
+- Do NOT include newline characters inside the text values.
+- Do NOT include any extra keys.
 
 ### Input Prototype Sentences (Do NOT copy verbatim; expand them into long-form narratives)
 anchor narrative: [{anchor}]
@@ -115,7 +112,7 @@ def append_jsonl(path: Path, obj: dict):
         f.write(json.dumps(obj, ensure_ascii=False) + "\n")
 
 # ====== 配置 ======
-INPUT_PATH = Path("../semeval-2026-task-4-datasets/semeval-2026-task-4-train-v1/train_track_a.csv")
+INPUT_PATH = Path("../semeval-2026-task-4-datasets/semeval-2026-task-4-train-v1/train_track_a_augmented_buchong.csv")
 OUTPUT_PATH = Path("../semeval-2026-task-4-datasets/semeval-2026-task-4-train-v1/train_track_a_augmented.jsonl")
 
 MODEL_NAME = "gpt-4o-mini"
